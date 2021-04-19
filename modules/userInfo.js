@@ -11,8 +11,9 @@ mongoose.connect('mongodb://localhost/lifeNotesSharing', function (err) {
 
 const UserSchema = new Schema({
   name: String,
-  account: String,
+  phoneNum: String,
   password: String,
+  sign: Boolean,
 });
 
 const User = mongoose.model('User', UserSchema);

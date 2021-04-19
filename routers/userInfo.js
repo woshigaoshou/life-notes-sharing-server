@@ -1,24 +1,21 @@
-var express = require('express')
-var router = express.Router()
+const { User } = require('../modules');
 
-const User = require('./modules/userInfo');
+var express = require('express');
+var router = express.Router();
 
-router.get('/save', function (req, res) {
+console.log(router);
+
+// const userInfo = new router();
+
+router.post('/save', function (req, res) {  
   const user = new User({
-    name: '张三',
-    account: 'account1',
-    password: '123',
+    ...req.body,
+    sign: true,
   });
   user.save();
-  // User.create({
-  //   name: '张三',
-  //   account: 'account1',
-  //   password: '123',
-  // }).then(res => {
-  //   console.log(res);
-  // })
-  res.send('save');
+  res.send('注册成功');
 })
+
 router.get('/update', function (req, res) {
   const query = { account: 'account1' };
   const doc = { password: 123456 };
@@ -27,6 +24,7 @@ router.get('/update', function (req, res) {
   })
   res.send('update');
 })
+
 router.get('/delete', function (req, res) {
   const query = { account: 'account1' };
   const doc = { password: 123456 };
@@ -35,6 +33,7 @@ router.get('/delete', function (req, res) {
   })
   res.send('delete');
 })
+
 router.get('/find', function (req, res) {
   const query = { name: '张三' };
   User.find(query, function (req, res) {
@@ -42,4 +41,5 @@ router.get('/find', function (req, res) {
   })
   res.send('find');
 })
-module.exports = router
+
+module.exports = router;
