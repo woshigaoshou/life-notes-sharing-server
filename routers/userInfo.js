@@ -13,16 +13,20 @@ router.post('/register', function (req, res) {
 })
 
 router.post('/login', function (req, res) {  
+  // User.findOne({ ...req.body }).select('name -_id').then(result => {
   User.findOne({ ...req.body }).then(result => {
+    
     if (result !== null) {
       res.send({
         status: 200,
-        message: '登录失败',
+        message: '登录成功',
+        data: JSON.parse(JSON.stringify(result)),
       });
     } else {
       res.send({
         status: 0,
         message: '登录成功',
+        data: {},
       });
     }
   });  
@@ -53,7 +57,7 @@ router.put('/retrieve', function (req, res) {
 router.delete('/delete', function (req, res) {
   const query = { account: 'account1' };
   const doc = { password: 123456 };
-  User.remove(query, doc, function (req, res) {
+  User.remove(query, doc, function (err, res) {
     console.log(res);
   })
   res.send('delete');
