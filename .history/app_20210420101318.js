@@ -23,11 +23,11 @@ app.use(cors({
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use('/public/', express.static('./public/'));
-app.use('/life-notes-sharing', router);
+app.use('/life-notes-sharing', router.userInfo);
 
 // const routers = Object.keys(router);
 // routers.forEach(key => {
-//   app.use('/life-notes-sharing', router[key]);
+//   app.use(router[key]);
 // })
 
 app.listen(3000, function () {

@@ -23,12 +23,11 @@ app.use(cors({
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use('/public/', express.static('./public/'));
-app.use('/life-notes-sharing', router);
 
-// const routers = Object.keys(router);
-// routers.forEach(key => {
-//   app.use('/life-notes-sharing', router[key]);
-// })
+const routers = Object.keys(router);
+routers.forEach(key => {
+  app.use('/life-notes-sharing', router[key]);
+})
 
 app.listen(3000, function () {
   console.log('app is running at port 3000')
