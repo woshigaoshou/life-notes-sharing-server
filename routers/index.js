@@ -1,19 +1,5 @@
 var express = require('express');
 var router = express.Router();
-const multer = require('multer');
-
-
-let upload = multer({
-  storage: multer.diskStorage({
-    destination: function (req, file, cb) {
-      cb(null, './uploads/');
-    },
-    filename: function (req, file, cb) {
-      var changedName = (new Date().getTime())+'-'+file.originalname;
-      cb(null, changedName);
-    }
-  })
-});
 
 const userInfo = require('./userInfo');
 
@@ -26,11 +12,6 @@ const userInfo = require('./userInfo');
 //       path: req.file.path
 //   })
 // });
-
-router.post('/upload/profilePhoto', function(req, res) {
-  console.log(req);
-  
-});
 
 router.use('/user', userInfo)
 

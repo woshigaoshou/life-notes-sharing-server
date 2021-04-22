@@ -6,7 +6,7 @@ const cors = require('cors');
 
 app.use(cors({
   origin: "*",
-  credential: true,
+  credentials: true,
   methods: "PUT,POST,GET,DELETE,OPTIONS",
 }));
 
@@ -22,7 +22,7 @@ app.use(cors({
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use('/public/', express.static('./public/'));
+app.use('/public/', express.static('./uploads'));
 app.use('/life-notes-sharing', router);
 
 // const routers = Object.keys(router);

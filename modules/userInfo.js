@@ -14,7 +14,7 @@ const UserSchema = new Schema({
   phoneNum: String,
   password: String,
   sign: Boolean,
-  profilePhoto: String,
+  avatar: String,
   description: String,
   fans: Number,
   focus: Number,

@@ -1,12 +1,16 @@
 const { User } = require('../modules');
+const { url } = require('../public/constant');
 
 var express = require('express');
 var router = express.Router();
+var path = require('path');
+var fs = require("fs");
+var formidable = require('formidable');
 
 router.post('/register', function (req, res) {  
   const user = new User({
     ...req.body,
-    profilePhoto: '',
+    avatar: 'avatar.jpg',
     description: '暂无',
     fans: 0,
     focus: 0,
@@ -19,18 +23,21 @@ router.post('/register', function (req, res) {
 
 router.post('/login', function (req, res) {  
   // User.findOne({ ...req.body }).select('name -_id').then(result => {
-  User.findOne({ ...req.body }).then(result => {
+  User.findOne({ ...req.body }).then(result => {    
     
+    console.log(req.body);
     if (result !== null) {
+      const data = JSON.parse(JSON.stringify(result));
+      data.avatar = `${url}/public/${data.avatar}`;
       res.send({
         status: 200,
         message: '登录成功',
-        data: JSON.parse(JSON.stringify(result)),
+        data,
       });
     } else {
       res.send({
         status: 0,
-        message: '登录成功',
+        message: '登录失败',
         data: {},
       });
     }
@@ -56,7 +63,6 @@ router.put('/retrieve', function (req, res) {
       });
     }
   })
-
 })
 
 router.delete('/delete', function (req, res) {
@@ -75,5 +81,73 @@ router.get('/find', function (req, res) {
   })
   res.send('find');
 })
+
+router.post('/upload/avatar', function(req, res, next) {
+  var form = new formidable.IncomingForm();
+  form.uploadDir = path.join(__dirname, '../avatar/');
+  form.maxFieldsSize = 1 * 1024 * 1024;
+  form.keepExtensions = true;
+  form.parse(req, function (err, fields, file) {
+   
+    var filePath = '';
+    //如果提交文件的form中将上传文件的input名设置为tmpFile，就从tmpFile中取上传文件。否则取for in循环第一个上传的文件。  
+    if (file.tmpFile) {
+      filePath = file.tmpFile.path;
+    } else {
+      for (var key in file) {
+        if (file[key].path && filePath === '') {
+          filePath = file[key].path;
+          break;
+        }
+      }
+    }
+    //文件移动的目录文件夹，不存在时创建目标文件夹  
+    var targetDir = path.join(__dirname, '../uploads/');
+    if (!fs.existsSync(targetDir)) {
+      fs.mkdir(targetDir);
+    }
+
+    var fileExt = filePath.substring(filePath.lastIndexOf('.'));
+    //判断文件类型是否允许上传  
+    if (('.jpg.jpeg.png.gif').indexOf(fileExt.toLowerCase()) === -1) {
+      var err = new Error('此文件类型不允许上传');
+      res.json({
+        code: 0,
+        message: '此文件类型不允许上传'
+      });
+    } else {
+
+      //以当前时间戳对上传文件进行重命名  
+      var fileName = new Date().getTime() + fileExt;
+      var targetFile = path.join(targetDir, fileName);
+      //移动文件  
+      fs.rename(filePath, targetFile, function (err) {
+        if (err) {
+          console.info(err);
+          res.json({
+            status: 0,
+            message: '操作失败'
+          });
+        } else {
+          
+          User.findOneAndUpdate({
+            phoneNum: fields.phoneNum,
+          }, {
+            avatar: fileName
+          }, (err2, doc2) => {          
+            
+            //上传成功，返回文件的相对路径  
+            var avatar = `${url}/public/${fileName}`;
+            res.json({
+              status: 200,
+              avatar,
+            });
+          })
+
+        }
+      });
+    }
+  });
+});
 
 module.exports = router;
