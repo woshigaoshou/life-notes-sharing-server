@@ -14,6 +14,11 @@ const UserSchema = new Schema({
   phoneNum: String,
   password: String,
   sign: Boolean,
+  profilePhoto: String,
+  description: String,
+  fans: Number,
+  focus: Number,
+  appreciates: Number,
 });
 
 const User = mongoose.model('User', UserSchema);

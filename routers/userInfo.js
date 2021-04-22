@@ -6,6 +6,11 @@ var router = express.Router();
 router.post('/register', function (req, res) {  
   const user = new User({
     ...req.body,
+    profilePhoto: '',
+    description: '暂无',
+    fans: 0,
+    focus: 0,
+    appreciates: 0,
     sign: true,
   });
   user.save();
