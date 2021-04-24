@@ -10,12 +10,6 @@ var formidable = require('formidable');
 router.post('/register', function (req, res) {  
   const user = new User({
     ...req.body,
-    avatar: 'avatar.jpg',
-    description: '暂无',
-    fans: 0,
-    focus: 0,
-    appreciates: 0,
-    sign: true,
   });
   user.save();
   res.send('注册成功');
@@ -61,6 +55,115 @@ router.put('/retrieve', function (req, res) {
         status: 0,
         message: '找回密码失败'
       });
+    }
+  })
+})
+
+router.get('/focusList/:id', function (req, res) {
+  const { id } = req.params;
+  let list = [];
+  User.findOne({ _id: id }).then(result => {
+    if (result !== null) {
+
+      const ids = result.fans.map(item => item.id);
+      User.find({_id: {$in: ids}})
+        .then(data => {        
+        list = data.map((item) => ({
+          name: item.name,
+          _id: item._id,
+          avatar: `${url}/public/${item.avatar}`,
+          date: result.fans.find(value => value.id == item._id).date,
+          // 查找focus内是否有新增关注的人
+          bothWay: result.focus.some(id => item._id == id),
+        }))
+        
+      }).then(() => {
+        res.send({
+          status: 200,
+          data: {
+            list,
+          },
+        })
+      })
+    } else {
+      res.send({
+        status: 0,
+        data: {},
+      })
+    }
+  })
+})
+
+router.put('/changeFocusStatus', function (req, res) {
+
+  if (req.body.isFocus) {
+    Promise.all([
+      User.updateOne({ _id: req.body.handler_id}, { $push: { focus: req.body.focus_id } }),
+      User.updateOne({ _id: req.body.focus_id }, { $push: { fans: { id: req.body.handler_id, date: req.body.date } } }),
+    ])
+      .then(([res1, res2]) => {
+        res.send({
+          status: 200,
+          data: {
+            message: '关注成功'
+          },
+        })
+      })
+      .catch(err => {
+        res.send({
+          status: 0,
+          data: {
+            message: '关注失败，请稍后重试'
+          },
+        })
+      })
+  } else {
+
+    Promise.all([
+      User.findByIdAndUpdate(req.body.handler_id, { $pull: { focus: req.body.focus_id } }),
+      User.findByIdAndUpdate(req.body.focus_id, { $pull: { fans: { id: req.body.handler_id } } })
+    ])
+      .then(([res1, res2]) => {
+        console.log(res1,res2);
+        
+        res.send({
+          status: 200,
+          data: {
+            message: '取消关注成功'
+          },
+        })
+      })
+      .catch(err => {
+        res.send({
+          status: 0,
+          data: {
+            message: '取消关注失败，请稍后重试'
+          },
+        })
+      })
+  }
+
+})
+
+router.put('/editDesc', function (req, res) {
+  const params = req.body;
+  console.log(params);
+  
+  User.findByIdAndUpdate(params.user_id, { description: params.desc }, function (err, doc) {
+    if (err) {
+      res.send({
+        status: 0,
+        data: {
+          message: '修改简介失败'
+        }
+      })
+    } else {
+      res.send({
+        status: 200,
+        data: {
+          message: '修改简介成功'
+        }
+      })
     }
   })
 })

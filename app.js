@@ -2,6 +2,8 @@ const express = require('express');
 const app = express();
 const router = require('./routers');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+
 const cors = require('cors');
 
 app.use(cors({
@@ -9,6 +11,14 @@ app.use(cors({
   credentials: true,
   methods: "PUT,POST,GET,DELETE,OPTIONS",
 }));
+
+mongoose.connect('mongodb://localhost/lifeNotesSharing', function (err) {
+  if (err) {
+    console.log('连接失败');
+  } else {
+    console.log('连接成功');
+  }
+});
 
 //设置跨域访问
 // app.all('*', function (req, res, next) {
