@@ -33,6 +33,7 @@ mongoose.connect('mongodb://localhost/lifeNotesSharing', function (err) {
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use('/public/', express.static('./uploads'));
+app.use('/note/', express.static('./noteImages'));
 app.use('/life-notes-sharing', router);
 
 // const routers = Object.keys(router);

@@ -1,0 +1,26 @@
+const { Note, User } = require('../modules');
+const { url } = require('../public/constant');
+
+var express = require('express');
+var router = express.Router();
+var path = require('path');
+var fs = require("fs");
+var formidable = require('formidable');
+
+router.get('/list',async (req, res) => {
+  const data = await Note.find().populate('author_id', 'avatar name')
+  data.forEach(item => {
+    console.log(item);
+    
+    const images = item.note_detail.note_image;
+    
+    item.note_detail.note_images = images.map(img => `${url}/note/${img}`);
+  });
+
+  res.send({
+    status: 200,
+    data,
+  })
+})
+
+module.exports = router;

@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 const userInfo = require('./userInfo');
+const note = require('./note');
 
 // router.post('/upload/profilePhoto', upload.single('singleFile'), (req, res) => {
 //   console.log(req.file);
@@ -13,6 +14,7 @@ const userInfo = require('./userInfo');
 //   })
 // });
 
-router.use('/user', userInfo)
+router.use('/user', userInfo);
+router.use('/note', note);
 
 module.exports = router;
