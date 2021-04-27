@@ -10,8 +10,18 @@ const NotesSchema = new Schema({
   note_detail: {
     type: Object,
     default: {
-      note_image: [],
-      note_content: '',
+      note_image: {
+        type: Array,
+        default: [],
+      },
+      note_content: {
+        type: String,
+        default: '',
+      },
+      title: {
+        type: String,
+        default: '默认标题',
+      },
     }
   },
   appreciates_num: Number,

@@ -14,7 +14,7 @@ router.get('/list',async (req, res) => {
     
     const images = item.note_detail.note_image;
     
-    item.note_detail.note_images = images.map(img => `${url}/note/${img}`);
+    item.note_detail.note_image = images.map(img => `${url}/note/${img}`);
   });
 
   res.send({
@@ -22,5 +22,10 @@ router.get('/list',async (req, res) => {
     data,
   })
 })
+
+router.get('/detail/:id', (req, res) => {
+  const { id } = req.params;
+  res.send(id);
+});
 
 module.exports = router;
