@@ -24,8 +24,14 @@ const NotesSchema = new Schema({
       },
     }
   },
-  appreciates_num: Number,
-  collect_num: Number,
+  appreciates: {
+    type: Array,
+    default: [],
+  },
+  collect: {
+    type: Array,
+    default: [],
+  },
 });
 
 const Note = mongoose.model('Note', NotesSchema);

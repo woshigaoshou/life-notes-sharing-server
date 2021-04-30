@@ -8,7 +8,15 @@ var fs = require("fs");
 var formidable = require('formidable');
 
 router.get('/list',async (req, res) => {
-  const data = await Note.find().populate('author_id', 'avatar name')
+  const params = {};
+  if (req.query.keyword) {
+    params.$or = [
+      {'note_detail.title': { $regex: new RegExp(req.query.keyword, 'i') } },
+      {'note_detail.note_content': { $regex: new RegExp(req.query.keyword, 'i') } },
+    ];
+  }
+
+  const data = await Note.find(params).populate('author_id', 'avatar name')
   data.forEach(item => {   
     const images = item.note_detail.note_image;
     
