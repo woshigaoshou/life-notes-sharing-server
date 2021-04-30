@@ -105,6 +105,7 @@ router.put('/changeFocusStatus', function (req, res) {
         res.send({
           status: 200,
           data: {
+            bothWay: true,
             message: '关注成功'
           },
         })
@@ -129,6 +130,7 @@ router.put('/changeFocusStatus', function (req, res) {
         res.send({
           status: 200,
           data: {
+            bothWay: false,
             message: '取消关注成功'
           },
         })
