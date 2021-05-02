@@ -25,10 +25,10 @@ const UserSchema = new Schema({
     type: Array,
     default: [],
   },
-  appreciates: {
-    type: Number,
-    default: 0,
-  },
+  // appreciates: {
+  //   type: Number,
+  //   default: 0,
+  // },
 });
 
 const User = mongoose.model('User', UserSchema);

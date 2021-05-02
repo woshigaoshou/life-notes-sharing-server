@@ -7,6 +7,9 @@ var path = require('path');
 var fs = require("fs");
 var formidable = require('formidable');
 
+const multer = require('multer');
+
+
 router.post('/register', function (req, res) {  
   const user = new User({
     ...req.body,
@@ -19,7 +22,6 @@ router.post('/login', function (req, res) {
   // User.findOne({ ...req.body }).select('name -_id').then(result => {
   User.findOne({ ...req.body }).then(result => {    
     
-    console.log(req.body);
     if (result !== null) {
       const data = JSON.parse(JSON.stringify(result));
       data.avatar = `${url}/public/${data.avatar}`;
@@ -149,7 +151,6 @@ router.put('/changeFocusStatus', function (req, res) {
 
 router.put('/editDesc', function (req, res) {
   const params = req.body;
-  console.log(params);
   
   User.findByIdAndUpdate(params.user_id, { description: params.desc }, function (err, doc) {
     if (err) {
