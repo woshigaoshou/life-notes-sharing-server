@@ -6,6 +6,8 @@ var router = express.Router();
 var path = require('path');
 var fs = require("fs");
 var formidable = require('formidable');
+// 引入jwt token工具
+const JwtUtil = require('../public/utils/jwt');
 
 const multer = require('multer');
 
@@ -14,26 +16,62 @@ router.post('/register', function (req, res) {
   const user = new User({
     ...req.body,
   });
-  user.save();
-  res.send('注册成功');
+  User.find({ phoneNum: req.body.phoneNum }).then(result => {
+    console.log(result);
+    
+    if (result.length !== 0) {
+      res.send({
+        status: 0,
+        message: '注册失败，账号已存在！',
+      });
+    } else {
+      user.save();
+      res.send({
+        status: 200,
+        message: '注册成功',
+      });
+    }
+  })
 })
 
 router.post('/login', function (req, res) {  
   // User.findOne({ ...req.body }).select('name -_id').then(result => {
-  User.findOne({ ...req.body }).then(result => {    
+  User.findOne({ phoneNum: req.body.phoneNum }).then(result => {    
     
     if (result !== null) {
-      const data = JSON.parse(JSON.stringify(result));
-      data.avatar = `${url}/public/${data.avatar}`;
-      res.send({
-        status: 200,
-        message: '登录成功',
-        data,
-      });
+      if (req.body.password === result.password) {
+        
+        let jwt = new JwtUtil(result._id);
+        let token = jwt.generateToken();
+        res.send({
+          status:200,
+          message:'登陆成功',
+          token:token,
+          data: {
+            name: result.name,
+            description: result.description,
+            phoneNum: result.phoneNum,
+            fans: result.fans,
+            focus: result.focus,
+            avatar: `${url}/public/${result.avatar}`,
+            _id: result._id,
+          }
+        })
+      } else {
+        res.send({status:400,msg:'账号密码错误'});
+      }
+      
+      // const data = JSON.parse(JSON.stringify(result));
+      // data.avatar = `${url}/public/${data.avatar}`;
+      // res.send({
+      //   status: 200,
+      //   message: '登录成功',
+      //   data,
+      // });
     } else {
       res.send({
         status: 0,
-        message: '登录失败',
+        message: '账号不存在',
         data: {},
       });
     }
@@ -180,14 +218,6 @@ router.delete('/delete', function (req, res) {
   res.send('delete');
 })
 
-router.get('/find', function (req, res) {
-  const query = { name: '张三' };
-  User.find(query, function (req, res) {
-    console.log(res);
-  })
-  res.send('find');
-})
-
 router.post('/upload/avatar', function(req, res, next) {
   var form = new formidable.IncomingForm();
   form.uploadDir = path.join(__dirname, '../avatar/');
@@ -255,5 +285,17 @@ router.post('/upload/avatar', function(req, res, next) {
     }
   });
 });
+
+router.get('/detail/:id',async (req, res) => {
+  const id = req.params.id;
+  const data = await User.findById(id);
+  data.password = null;
+  data.phoneNum = null;
+  data.avatar = `${url}/public/${data.avatar}`;
+  res.send({
+    status: 200,
+    data,
+  })
+})
 
 module.exports = router;
